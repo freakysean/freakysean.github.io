@@ -180,6 +180,10 @@ import "../styles/global.css";
       });
 
       const loadDiscordProfile = async () => {
+        if (window.location.hostname.endsWith("github.io")) {
+          return;
+        }
+
         const card = document.querySelector("[data-discord-profile]");
         const avatar = document.querySelector("[data-discord-avatar]");
         const name = document.querySelector("[data-discord-name]");
