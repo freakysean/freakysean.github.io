@@ -179,53 +179,71 @@ import "../styles/global.css";
         });
       });
 
-      const loadDiscordProfile = async () => {
-        if (window.location.hostname.endsWith("github.io")) {
-          return;
-        }
+      <script is:inline>
+        (() => {
+          const loadDiscordProfile = async () => {
+            const card = document.querySelector("[data-discord-profile]");
+            const avatar = document.querySelector("[data-discord-avatar]");
+            const name = document.querySelector("[data-discord-name]");
+            const username = document.querySelector("[data-discord-username]");
 
-        const card = document.querySelector("[data-discord-profile]");
-        const avatar = document.querySelector("[data-discord-avatar]");
-        const name = document.querySelector("[data-discord-name]");
-        const username = document.querySelector("[data-discord-username]");
+            console.log("Discord elements:", {
+              card: Boolean(card),
+              avatar: Boolean(avatar),
+              name: Boolean(name),
+              username: Boolean(username),
+            });
 
-        if (
-          !(card instanceof HTMLAnchorElement) ||
-          !(avatar instanceof HTMLImageElement) ||
-          !(name instanceof HTMLElement) ||
-          !(username instanceof HTMLElement)
-        ) {
-          return;
-        }
+            if (!card || !avatar || !name || !username) {
+              console.error("Missing Discord DOM elements.");
+              return;
+            }
 
-        try {
-          const response = await fetch("/discord-profile.json");
+            try {
+              const endpoint = new URL("discord-profile.json", window.location.href);
 
-          if (!response.ok) {
-            username.textContent = "Run with Netlify functions to load live profile.";
-            return;
+              const response = await fetch(endpoint, {
+                cache: "no-store",
+              });
+
+              console.log("Discord response status:", response.status);
+
+              const profile = await response.json();
+
+              console.log("Loaded Discord profile:", profile);
+
+              if (!profile.configured) {
+                username.textContent = "Discord env vars are not configured.";
+                return;
+              }
+
+              if (profile.error) {
+                username.textContent = profile.error;
+                return;
+              }
+
+              card.href = profile.profileUrl;
+
+              name.textContent = profile.displayName;
+              username.textContent = `@${profile.username}`;
+
+              if (profile.avatar) {
+                avatar.src = profile.avatar;
+                avatar.alt = `${profile.displayName}'s Discord avatar`;
+              }
+            } catch (error) {
+              console.error("Failed to load Discord profile:", error);
+              username.textContent = "Discord profile unavailable.";
+            }
+          };
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", loadDiscordProfile);
+          } else {
+            loadDiscordProfile();
           }
-
-          const data = await response.json();
-
-          if (!data.configured) {
-            username.textContent = "Set Discord env vars to load live profile.";
-            return;
-          }
-
-          card.href = data.profileUrl;
-          name.textContent = data.displayName;
-          username.textContent = `@${data.username}`;
-
-          if (data.avatar) {
-            avatar.src = data.avatar;
-          }
-        } catch {
-          username.textContent = "Discord profile unavailable.";
-        }
-      };
-
-      loadDiscordProfile();
+        })();
+      </script>
     </script>
   </body>
 </html>
