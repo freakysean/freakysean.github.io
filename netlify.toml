@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[dev]
+  command = "npm run dev -- --host 127.0.0.1 --port 4390"
+  targetPort = 4390
+  port = 8890
+  publish = "dist"
+  framework = "#custom"

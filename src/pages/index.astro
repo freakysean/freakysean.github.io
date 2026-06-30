@@ -1,0 +1,227 @@
+---
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Page</title>
+  </head>
+  <body>
+    <main class="page">
+      <section class="main-box" aria-label="Main page content">
+        <nav class="section-nav" aria-label="Page sections">
+          <button class="nav-tab active" type="button" data-panel-target="intro">Intro</button>
+          <button class="nav-tab" type="button" data-panel-target="music">Music</button>
+          <button class="nav-tab" type="button" data-panel-target="games">Games</button>
+          <button class="nav-tab" type="button" data-panel-target="links">Links</button>
+        </nav>
+
+        <section id="intro" class="segment intro-segment active" data-panel aria-label="Intro">
+          <p class="intro-label">Welcome to my page</p>
+          <h1 data-fit-text>Seanny_capalot</h1>
+          <p class="bio">
+            I play alotta games wit friends, I love sports, and I dabble in making foods.
+          </p>
+          <a class="profile-card" href="https://discord.com/users/896145621998796861" data-discord-profile>
+            <span class="profile-avatar" aria-hidden="true">
+              <img src="/icons/discord.svg" alt="" data-discord-avatar />
+            </span>
+            <span class="profile-copy">
+              <small>Discord profile</small>
+              <strong data-discord-name>Seanny_capalot</strong>
+              <span data-discord-username>Connect Discord API to load live profile.</span>
+            </span>
+          </a>
+        </section>
+
+        <section id="music" class="segment music-segment" data-panel hidden aria-label="Music">
+          <p class="section-label">Music</p>
+          <h2>What I listen to</h2>
+          <div class="song-list">
+            <a class="song-card" href="https://open.spotify.com/track/3XLSlQLJf3Ut0zvMUxnF1h">
+              <span>
+                <strong>Houstatlantavegas</strong>
+                <small>Drake</small>
+              </span>
+              <img src="/icons/spotify.svg" alt="" />
+            </a>
+            <a class="song-card" href="https://open.spotify.com/track/5PRMuLhXIJjVfJItq3Bq8M">
+              <span>
+                <strong>convenience</strong>
+                <small>jaydes</small>
+              </span>
+              <img src="/icons/spotify.svg" alt="" />
+            </a>
+            <a class="song-card" href="https://open.spotify.com/track/6TJaoJX8VhptZ0DkcsjWaR">
+              <span>
+                <strong>2021 Vibes</strong>
+                <small>LUCKI</small>
+              </span>
+              <img src="/icons/spotify.svg" alt="" />
+            </a>
+          </div>
+        </section>
+
+        <section id="games" class="segment games-segment" data-panel hidden aria-label="Games">
+          <p class="section-label">Games</p>
+          <h2>What I play</h2>
+          <div class="game-list">
+            <article class="game-card">
+              <img src="/images/roblox.jpg" alt="Roblox" />
+              <span>Roblox</span>
+            </article>
+            <article class="game-card">
+              <img src="/images/nba.jpg" alt="NBA 2K" />
+              <span>NBA 2K</span>
+            </article>
+            <article class="game-card">
+              <img src="/images/ghost.jpg" alt="Ghost of Tsushima" />
+              <span>Ghost of Tsushima</span>
+            </article>
+          </div>
+        </section>
+
+        <section id="links" class="segment links" data-panel hidden aria-label="Profile links">
+          <a class="link-button discord" href="https://discord.com/users/896145621998796861">
+            <img src="/icons/discord.svg" alt="" />
+            Discord
+          </a>
+          <a class="link-button" href="https://steamcommunity.com/profiles/76561199618581766">
+            <img src="/icons/steam.svg" alt="" />
+            Steam
+          </a>
+          <a class="link-button" href="https://open.spotify.com/user/31cc7satjzqogi3k7gaeus6snnfy">
+            <img src="/icons/spotify.svg" alt="" />
+            Spotify
+          </a>
+          <a class="link-button" href="https://www.roblox.com/users/3292420352/profile">
+            <img src="/icons/roblox.svg" alt="" />
+            Roblox
+          </a>
+        </section>
+      </section>
+    </main>
+    <script>
+      const fitHeading = (heading: Element) => {
+        if (!(heading instanceof HTMLElement)) return;
+
+        const parent = heading.parentElement;
+        if (!parent) return;
+
+        const styles = getComputedStyle(parent);
+        const available =
+          parent.clientWidth -
+          Number.parseFloat(styles.paddingLeft) -
+          Number.parseFloat(styles.paddingRight);
+        const min = 18;
+        const max = Math.min(112, available * 0.2);
+
+        let low = min;
+        let high = max;
+
+        for (let i = 0; i < 12; i += 1) {
+          const size = (low + high) / 2;
+          heading.style.fontSize = `${size}px`;
+
+          if (heading.scrollWidth <= available) {
+            low = size;
+          } else {
+            high = size;
+          }
+        }
+
+        heading.style.fontSize = `${Math.floor(low)}px`;
+      };
+
+      const headings = document.querySelectorAll("[data-fit-text]");
+      const resizeObserver = new ResizeObserver(() => {
+        headings.forEach(fitHeading);
+      });
+
+      headings.forEach((heading) => {
+        fitHeading(heading);
+        if (heading.parentElement) {
+          resizeObserver.observe(heading.parentElement);
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        headings.forEach(fitHeading);
+      });
+
+      document.fonts?.ready.then(() => {
+        headings.forEach(fitHeading);
+      });
+
+      const tabs = document.querySelectorAll("[data-panel-target]");
+      const panels = document.querySelectorAll("[data-panel]");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          if (!(tab instanceof HTMLButtonElement)) return;
+
+          const targetId = tab.dataset.panelTarget;
+
+          tabs.forEach((item) => {
+            item.classList.toggle("active", item === tab);
+          });
+
+          panels.forEach((panel) => {
+            const isActive = panel.id === targetId;
+            panel.toggleAttribute("hidden", !isActive);
+            panel.classList.toggle("active", isActive);
+          });
+
+          headings.forEach(fitHeading);
+        });
+      });
+
+      const loadDiscordProfile = async () => {
+        const card = document.querySelector("[data-discord-profile]");
+        const avatar = document.querySelector("[data-discord-avatar]");
+        const name = document.querySelector("[data-discord-name]");
+        const username = document.querySelector("[data-discord-username]");
+
+        if (
+          !(card instanceof HTMLAnchorElement) ||
+          !(avatar instanceof HTMLImageElement) ||
+          !(name instanceof HTMLElement) ||
+          !(username instanceof HTMLElement)
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch("/.netlify/functions/discord-profile");
+
+          if (!response.ok) {
+            username.textContent = "Run with Netlify functions to load live profile.";
+            return;
+          }
+
+          const data = await response.json();
+
+          if (!data.configured) {
+            username.textContent = "Set Discord env vars to load live profile.";
+            return;
+          }
+
+          card.href = data.profileUrl;
+          name.textContent = data.displayName;
+          username.textContent = `@${data.username}`;
+
+          if (data.avatar) {
+            avatar.src = data.avatar;
+          }
+        } catch {
+          username.textContent = "Discord profile unavailable.";
+        }
+      };
+
+      loadDiscordProfile();
+    </script>
+  </body>
+</html>
