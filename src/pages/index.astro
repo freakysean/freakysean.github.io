@@ -199,7 +199,7 @@ import "../styles/global.css";
         }
 
         try {
-          const response = await fetch("/.netlify/functions/discord-profile");
+          const response = await fetch("/discord-profile.json");
 
           if (!response.ok) {
             username.textContent = "Run with Netlify functions to load live profile.";
